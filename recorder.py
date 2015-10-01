@@ -104,14 +104,6 @@ class Recorder:
                 positive_fft_data = numpy.abs(real_fft_data)
                 if self.verbose: print 'positive_fft_data %s' % positive_fft_data[512]
 
-                # decibel_fft_data = numpy.log10(positive_fft_data/self.changeable['reference_db'])
-                # if self.verbose: print 'decibel_fft_data %s' % decibel_fft_data[512]
-                #
-                # decibel_fft_data = decibel_fft_data.clip(0)
-                # for i in range(0, len(decibel_fft_data)):
-                #     if not numpy.isfinite(decibel_fft_data[i]):
-                #         decibel_fft_data[i] = -100
-
                 # This will be returned to frame_request
                 response = {
                     'rms': rms,
