@@ -7,7 +7,7 @@ import threading
 import time
 
 CHUNK = 1024
-CHANNELS = 2
+CHANNELS = 1
 RATE = 44100
 
 class Recorder:

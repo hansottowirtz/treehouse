@@ -7,10 +7,21 @@ import signal
 import sys
 import numpy as np
 
-# from neopixel import *
-
 has_gui = '-gui' in sys.argv
 has_cli = '-cli' in sys.argv
+has_leds = '-leds' in sys.argv
+
+if has_leds:
+    from neopixel import *
+
+    LED_COUNT      = 283     # Number of LED pixels.
+    LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
+    LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
+    LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
+    LED_BRIGHTNESS = 100     # Set to 0 for darkest and 255 for brightest
+    LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
+
+
 
 if has_gui:
     import matplotlib
@@ -47,6 +58,10 @@ class Pixels:
         if has_gui:
             self.start_gui()
 
+        if has_leds:
+            self.strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
+            self.strip.begin()
+
     def on_frame(self, response):
         if not self.stop:
             # I combine the logarithmic power with the real power, without a good explanation
@@ -58,7 +73,7 @@ class Pixels:
             response['treble'] = np.average(my_fft_data[29:325])*self.recorder.changeable['treble_weight']*self.recorder.changeable['multiplier']
 
             if self.frame_counter % 5 == 0 and self.frame_counter != 0: # About every fourth of a second
-                self.draw_dots(np.average(self.bass_buffer), np.average(self.mid_buffer), np.average(self.treble_buffer))
+                self.draw_dots(np.average(self.bass_buffer), np.average(self.mid_buffer), np.average(self.treble_buffer), response['rms'])
                 self.bass_buffer = []
                 self.mid_buffer = []
                 self.treble_buffer = []
@@ -71,13 +86,23 @@ class Pixels:
             self.frame_counter = self.frame_counter + 1
             self.recorder.request_frame(self.on_frame)
 
-    def draw_dots(self, bass, mid, treble):
+    def draw_dots(self, bass, mid, treble, rms):
         if has_cli:
             dot = u'█'
             print dot*int(bass/100)
             print dot*int(mid/100)
             print dot*int(treble/100)
             print
+
+        if has_leds:
+            vol = int(rms/100)
+            for i in strip.numPixels():
+                if i < vol:
+                    strip.setPixelColor(i, Color(0, 153, 204))
+                else:
+                    strip.setPixelColor(i, Color(0, 0, 0))
+            strip.show()
+
 
     def close(self, *args, **kwargs):
         print 'Closing plot and recorder'
