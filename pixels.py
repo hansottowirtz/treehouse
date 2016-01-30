@@ -96,12 +96,12 @@ class Pixels:
 
         if has_leds:
             vol = int(rms/100)
-            for i in strip.numPixels():
+            for i in self.strip.numPixels():
                 if i < vol:
-                    strip.setPixelColor(i, Color(0, 153, 204))
+                    self.strip.setPixelColor(i, Color(0, 153, 204))
                 else:
-                    strip.setPixelColor(i, Color(0, 0, 0))
-            strip.show()
+                    self.strip.setPixelColor(i, Color(0, 0, 0))
+            self.strip.show()
 
 
     def close(self, *args, **kwargs):
