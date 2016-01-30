@@ -112,7 +112,7 @@ class Recorder:
                     'complex_fft_data': complex_fft_data,
                     'real_fft_data': real_fft_data,
                     'positive_fft_data': positive_fft_data,
-                    #'decibel_fft_data': decibel_fft_data,
+                    #'decibel_fft_data': decibel_fft_data
                 }
 
                 frame_request_buffer_clone = list(self.frame_request_buffer)

@@ -40,6 +40,12 @@ class Pixels:
         if __name__ == '__main__':
             signal.signal(signal.SIGINT, self.close) # on KeyboardInterrupt etc.
 
+        if has_leds:
+            self.strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
+            self.strip.begin()
+            self.strip.setPixelColor(1, Color(0, 100, 0))
+            self.strip.show()
+
         self.recorder = recorder.Recorder()
         self.recorder.setup()
         self.recorder.changeable['reference_db'] = 3
@@ -57,10 +63,6 @@ class Pixels:
 
         if has_gui:
             self.start_gui()
-
-        if has_leds:
-            self.strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
-            self.strip.begin()
 
     def on_frame(self, response):
         if not self.stop:
@@ -84,6 +86,7 @@ class Pixels:
             self.treble_buffer.append(response['treble'])
 
             self.frame_counter = self.frame_counter + 1
+
             self.recorder.request_frame(self.on_frame)
 
     def draw_dots(self, bass, mid, treble, rms):
@@ -96,7 +99,7 @@ class Pixels:
 
         if has_leds:
             vol = int(rms/100)
-            for i in self.strip.numPixels():
+            for i in range(self.strip.numPixels()):
                 if i < vol:
                     self.strip.setPixelColor(i, Color(0, 153, 204))
                 else:
