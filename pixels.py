@@ -21,8 +21,6 @@ if has_leds:
     LED_BRIGHTNESS = 100     # Set to 0 for darkest and 255 for brightest
     LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 
-
-
 if has_gui:
     import matplotlib
     matplotlib.use('TkAgg')
@@ -41,9 +39,16 @@ class Pixels:
             signal.signal(signal.SIGINT, self.close) # on KeyboardInterrupt etc.
 
         if has_leds:
+            try:
+                os.rename('/etc/foo', '/etc/bar')
+            except IOError as e:
+                if (e[0] == errno.EPERM):
+                   print >> sys.stderr, "You need root permissions to use the leds!"
+                   sys.exit(1)
+
             self.strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
             self.strip.begin()
-            self.strip.setPixelColor(1, Color(0, 100, 0))
+            self.strip.setPixelColor(1, Color(0, 255, 0))
             self.strip.show()
 
         self.recorder = recorder.Recorder()
@@ -74,7 +79,7 @@ class Pixels:
             response['mid'] = np.average(my_fft_data[7:29])*self.recorder.changeable['mid_weight']*self.recorder.changeable['multiplier']
             response['treble'] = np.average(my_fft_data[29:325])*self.recorder.changeable['treble_weight']*self.recorder.changeable['multiplier']
 
-            if self.frame_counter % 5 == 0 and self.frame_counter != 0: # About every fourth of a second
+            if self.frame_counter % 100 == 0 and self.frame_counter != 0: # About every fourth of a second
                 self.draw_dots(np.average(self.bass_buffer), np.average(self.mid_buffer), np.average(self.treble_buffer), response['rms'])
                 self.bass_buffer = []
                 self.mid_buffer = []
