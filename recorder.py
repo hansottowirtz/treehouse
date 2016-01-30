@@ -8,7 +8,7 @@ import time
 
 CHUNK = 1024
 CHANNELS = 1
-RATE = 44100
+RATE = 24000
 
 class Recorder:
     # General stuff
