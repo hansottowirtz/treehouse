@@ -88,7 +88,7 @@ class Pixels:
 
     def draw_dots(self, bass, mid, treble, rms):
         if has_cli:
-            dot = u'█'
+            dot = u'-'
             print dot*int(bass/100)
             print dot*int(mid/100)
             print dot*int(treble/100)
