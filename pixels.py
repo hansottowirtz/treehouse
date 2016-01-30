@@ -34,6 +34,8 @@ class Pixels:
         self.data_to_plot2_name = None
         self.data = {}
 
+        self.vol = 0
+
     def start(self):
         if __name__ == '__main__':
             signal.signal(signal.SIGINT, self.close) # on KeyboardInterrupt etc.
@@ -103,13 +105,9 @@ class Pixels:
             print
 
         if has_leds:
-            vol = int(rms/100)
-            for i in range(self.strip.numPixels()):
-                if i < vol:
-                    self.strip.setPixelColor(i, Color(0, 153, 204))
-                else:
-                    self.strip.setPixelColor(i, Color(0, 0, 0))
-            self.strip.show()
+            self.vol = int(rms/100)
+            thread = threading.Thread(target=self.set_leds)
+            thread.start()
 
 
     def close(self, *args, **kwargs):
@@ -162,6 +160,16 @@ class Pixels:
                 self.li2.set_ydata(y2)
 
             self.fig.canvas.draw()
+
+    if has_leds:
+        def set_leds(self):
+            for i in range(self.strip.numPixels()):
+                if i < self.vol:
+                    self.strip.setPixelColor(i, Color(0, 153, 204))
+                else:
+                    self.strip.setPixelColor(i, Color(0, 0, 0))
+            self.strip.show()
+
 
 if __name__ == '__main__':
     pixel = None
